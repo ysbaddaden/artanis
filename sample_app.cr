@@ -24,14 +24,25 @@ class App < Artanis::Application
   get "/kiwi/*path.:format" do |path, format|
     "KIWI: #{path} (#{format})"
   end
+
+  get "/optional(.:format)" do |format|
+    "OPTIONAL (#{format})"
+  end
 end
 
-puts App.call(Artanis::Request.new("GET", "/fail"))
+puts "ASSERTIONS:"
 puts App.call(Artanis::Request.new("GET", "/"))
 puts App.call(Artanis::Request.new("GET", "/posts"))
-puts App.call(Artanis::Request.new("GET", "/posts/1"))
 puts App.call(Artanis::Request.new("GET", "/posts/1.json"))
-puts App.call(Artanis::Request.new("DELETE", "/blog/me/posts/123/comments/456"))
 puts App.call(Artanis::Request.new("DELETE", "/blog/me/posts/123/comments/456.xml"))
 puts App.call(Artanis::Request.new("GET", "/wiki/category/page.html"))
 puts App.call(Artanis::Request.new("GET", "/kiwi/category/page.html"))
+puts App.call(Artanis::Request.new("GET", "/optional"))
+puts App.call(Artanis::Request.new("GET", "/optional.html"))
+
+puts
+puts "REFUTATIONS:"
+puts App.call(Artanis::Request.new("GET", "/fail"))
+puts App.call(Artanis::Request.new("GET", "/posts/1"))
+puts App.call(Artanis::Request.new("DELETE", "/blog/me/posts/123/comments/456"))
+

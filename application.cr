@@ -24,6 +24,9 @@ module Artanis
               .gsub(/_PARAM_/, "([^\\/]+)")
               .gsub(/_DOT_/, "\\.")
               .gsub(/_SLASH_/, "\\/")
+              #.gsub(/_LPAREN_(.+?)_RPAREN_/, "(?:\1)")
+              .gsub(/_LPAREN_/, "(?:")
+              .gsub(/_RPAREN_/, ")?")
               .id
             "when /\\A#{ regexp }\\Z/ \n        new(request).#{ method.id }($~)"
           }
