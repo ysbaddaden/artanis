@@ -1,3 +1,5 @@
+require "./dsl"
+
 module Artanis
   class Application
     include DSL
