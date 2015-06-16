@@ -15,6 +15,15 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal "ROOT", call("get", "/")
   end
 
+  def test_routes_with_unicode_chars
+    assert_equal "TELUGU", call("get", "/lang/తెలుగు")
+  end
+
+  def test_routes_with_special_chars
+    assert_equal "POST-OFFICE", call("get", "/online-post-office")
+    assert_equal "POST_OFFICE", call("get", "/online_post_office")
+  end
+
   def test_routes_with_dot_separator
     assert_equal "POSTS (xml)", call("GET", "/posts.xml")
     assert_equal "NOT FOUND: GET /posts.json", call("GET", "/posts.json")

@@ -16,20 +16,8 @@ module Artanis
         @type.methods
           .map(&.name.stringify)
           .select(&.starts_with?("match_#{method.id}"))
-          .map { |method_name|
-            regexp = method_name
-              .gsub(/\Amatch_[A-Z]+_/, "")
-              .gsub(/_SPLAT_/, "(.*?)")
-              .gsub(/_PARAM_/, "([^\\/]+)")
-              .gsub(/_DOT_/, "\\.")
-              .gsub(/_SLASH_/, "\\/")
-              #.gsub(/_LPAREN_(.+?)_RPAREN_/, "(?:\1)")
-              .gsub(/_LPAREN_/, "(?:")
-              .gsub(/_RPAREN_/, ")?")
-              .id
-            "when /\\A#{ regexp }\\Z/ \n        new(request).#{ method_name.id }($~)"
-          }
-          .join("\n      ")
+          .map { |method_name| "when #{ method_name.upcase.id }\n        new(request).#{ method_name.id }($~)" }
+          .join("      \n")
           .id
       }}
       end

@@ -2,26 +2,40 @@ module Artanis
   module DSL
     {% for method in %w(head options get post put patch delete) %}
       macro {{ method.id }}(path, &block)
-        match :{{ method.id }}, \{\{ path }} do \{\{ (block.args.empty? ? "" : "|#{block.args.argify}|").id }}
+        match {{ method }}, \{\{ path }} do \{\{ (block.args.empty? ? "" : "|#{block.args.argify}|").id }}
           \{\{ yield }}
         end
       end
     {% end %}
 
     # FIXME: block's original location is lost when passing args
+    # TODO: replace special chars in routes
     macro match(method, path, &block)
       {%
-        method_name = path
+        prepared = path
           .gsub(/\*[^\/.()]+/, "_SPLAT_")
           .gsub(/:[^\/.()]+/, "_PARAM_")
           .gsub(/\./, "_DOT_")
           .gsub(/\//, "_SLASH_")
           .gsub(/\(/, "_LPAREN_")
           .gsub(/\)/, "_RPAREN_")
-          .id
+
+        method_name = prepared
+          .gsub(/-/, "_MINUS_")
+
+        matcher = prepared
+          .gsub(/_SPLAT_/, "(.*?)")
+          .gsub(/_PARAM_/, "([^\\/]+)")
+          .gsub(/_DOT_/, "\\.")
+          .gsub(/_SLASH_/, "\\/")
+          #.gsub(/_LPAREN_(.+?)_RPAREN_/, "(?:\1)")
+          .gsub(/_LPAREN_/, "(?:")
+          .gsub(/_RPAREN_/, ")?")
       %}
-      def match_{{ method.upcase.id }}_{{ method_name }}(%matchdata)
-        {{ path.stringify }}
+      MATCH_{{ method.upcase.id }}_{{ method_name.upcase.id }} = /\A{{ matcher.id }}\\Z/
+
+      def match_{{ method.upcase.id }}_{{ method_name.id }}(%matchdata)
+        {{ path }}
           .scan(/:([\w\d_]+)/)
           .each_with_index do |m, i|
             if %value = %matchdata[i + 1]?

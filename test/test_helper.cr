@@ -33,4 +33,16 @@ class App < Artanis::Application
   get "/optional(.:format)" do |format|
     "OPTIONAL (#{format})"
   end
+
+  get "/lang/తెలుగు" do
+    "TELUGU"
+  end
+
+  get "/online-post-office" do
+    "POST-OFFICE"
+  end
+
+  get "/online_post_office" do
+    "POST_OFFICE"
+  end
 end
