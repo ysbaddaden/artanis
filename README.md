@@ -28,9 +28,6 @@ for more details.
 
 ## Usage
 
-Only the DSL has been implemented. It would require a rack-like library to build
-an actual HTTP server.
-
 ```crystal
 require "http/server"
 require "./src/artanis"
@@ -66,8 +63,8 @@ server.listen
 
 ## Benchmark
 
-Running wrk against the above example (stpuid hello worl) gives the following
-result (TL;DR: 15µs per request):
+Running wrk against the above example (pointless hello world) gives the following
+results (TL;DR 15µs per request):
 
     $ wrk -c 1000 -d 60 -t 1 http://localhost:9292/
     Running 1m test @ http://localhost:9292/
@@ -98,7 +95,7 @@ against EVERY routes to eventually... find nothing.
     not found (path): 19.14 µs
 
 Keep in mind these numbers tell nothing about reality. They only measure how
-fast the generated `Application.call` is in a particular case.
+fast the generated `Application.call(request)` method is in predefined cases.
 
 ## License
 
