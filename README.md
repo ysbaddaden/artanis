@@ -66,15 +66,18 @@ server.listen
 Running wrk against the above example (pointless hello world) gives the following
 results (TL;DR 15µs per request):
 
-    $ wrk -c 1000 -d 60 -t 1 http://localhost:9292/
-    Running 1m test @ http://localhost:9292/
-      1 threads and 1000 connections
-      Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency    15.42ms    3.06ms 217.73ms   90.38%
-        Req/Sec    65.05k     5.13k   71.49k    90.67%
-      3883581 requests in 1.00m, 344.44MB read
-    Requests/sec:  64693.76
-    Transfer/sec:      5.74MB
+```
+$ wrk -c 1000 -t 1 -d 30 http://localhost:9292/
+Running 30s test @ http://localhost:9292/
+  1 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    14.56ms    3.69ms 219.83ms   96.04%
+    Req/Sec    68.74k     3.78k   72.97k    94.00%
+  2052623 requests in 30.02s, 129.20MB read
+Requests/sec:  68373.45
+Transfer/sec:      4.30MB
+```
+
 
 NOTE: trying to use many wrk threads will cut the number of requests in half for
 each new thread. I suppose this is due to HTTP::Server and coroutines being
@@ -85,14 +88,16 @@ limits of the generated Crystal code, like going over all routes to find nothing
 takes an awful lot of time, since it must build/execute a regular expression
 against EVERY routes to eventually... find nothing.
 
-    $ crystal run --release test/dsl_bench.cr
-    get root: 0.82 µs
-    get param: 2.36 µs
-    get params (block args): 3.34 µs
-    get many params: 6.16 µs
-    get many params (block args): 4.58 µs
-    not found (method): 0.75 µs
-    not found (path): 19.14 µs
+```
+$ crystal run --release test/dsl_bench.cr
+get root: 1.49 µs
+get param: 2.34 µs
+get params (block args): 3.24 µs
+get many params: 6.34 µs
+get many params (block args): 5.24 µs
+not found (method): 1.84 µs
+not found (path): 18.48 µs
+```
 
 Keep in mind these numbers tell nothing about reality. They only measure how
 fast the generated `Application.call(request)` method is in predefined cases.
