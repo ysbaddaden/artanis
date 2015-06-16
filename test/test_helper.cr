@@ -50,4 +50,24 @@ class App < Artanis::Application
   get "/online_post_office" do
     "POST_OFFICE"
   end
+
+  get "/halt" do
+    halt
+    "NEVER REACHED"
+  end
+
+  get "/halt/gone" do
+    halt 410
+    "NEVER REACHED"
+  end
+
+  get "/halt/message" do
+    halt "message"
+    "NEVER REACHED"
+  end
+
+  get "/halt/code/message" do
+    halt 401, "please sign in"
+    "NEVER REACHED"
+  end
 end

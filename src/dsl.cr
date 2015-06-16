@@ -65,5 +65,20 @@ module Artanis
         end
       end
     end
+
+    macro halt(code_or_message = 200)
+      {% if code_or_message.is_a?(NumberLiteral) %}
+        status {{ code_or_message }}.to_i
+      {% else %}
+        body {{ code_or_message }}.to_s
+      {% end %}
+      return
+    end
+
+    macro halt(code, message)
+      status {{ code }}.to_i
+      body {{ message }}.to_s
+      return
+    end
   end
 end

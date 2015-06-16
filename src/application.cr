@@ -12,7 +12,6 @@ end
 
 module Artanis
   # TODO: pass helper to skip to next route
-  # TODO: halt helper to exit the current route immediately
   # TODO: etag helper to set http etag + last-modified headers and skip request if-modified-since
   # TODO: before(path, &block) and after(path, &block) macros
   # TODO: error(code, &block) macro to install handlers for returned statuses

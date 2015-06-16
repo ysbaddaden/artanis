@@ -62,6 +62,24 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal "OPTIONAL (html)", call("GET", "/optional.html").body
   end
 
+  def test_halt
+    response = call("GET", "/halt")
+    assert_equal 200, response.status_code
+    assert_empty response.body
+
+    response = call("GET", "/halt/gone")
+    assert_equal 410, response.status_code
+    assert_empty response.body
+
+    response = call("GET", "/halt/message")
+    assert_equal 200, response.status_code
+    assert_equal "message", response.body
+
+    response = call("GET", "/halt/code/message")
+    assert_equal 401, response.status_code
+    assert_equal "please sign in", response.body
+  end
+
   def call(request, method)
     App.call(HTTP::Request.new(request, method))
   end
