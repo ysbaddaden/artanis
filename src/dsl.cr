@@ -1,5 +1,4 @@
 module Artanis
-  # TODO: namespace
   module DSL
     {% for method in %w(head options get post put patch delete) %}
       macro {{ method.id }}(path, &block)

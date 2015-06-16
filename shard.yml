@@ -1,0 +1,10 @@
+name: artanis
+version: 0.1.0
+
+author:
+  - Julien Portalier <julien@portalier.com
+
+dependencies:
+  minitest:
+    github: ysbaddaden/minitest.cr
+    version: 0.1.1
