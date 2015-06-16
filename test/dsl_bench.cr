@@ -25,13 +25,13 @@ class BenchApp < Artanis::Application
   {% end %}
 end
 
-method_not_found = Artanis::Request.new("UNKNOWN", "/fail")
-path_not_found = Artanis::Request.new("GET", "/fail")
-get_root = Artanis::Request.new("GET", "/")
-get_post = Artanis::Request.new("GET", "/posts/123")
-get_comment = Artanis::Request.new("GET", "/comments/456")
-get_post_comment = Artanis::Request.new("GET", "/blog/me/posts/123/comments/456")
-delete_comment = Artanis::Request.new("DELETE", "/blog/me/posts/123/comments/456")
+method_not_found = HTTP::Request.new("UNKNOWN", "/fail")
+path_not_found = HTTP::Request.new("GET", "/fail")
+get_root = HTTP::Request.new("GET", "/")
+get_post = HTTP::Request.new("GET", "/posts/123")
+get_comment = HTTP::Request.new("GET", "/comments/456")
+get_post_comment = HTTP::Request.new("GET", "/blog/me/posts/123/comments/456")
+delete_comment = HTTP::Request.new("DELETE", "/blog/me/posts/123/comments/456")
 
 #puts BenchApp.call(get_root)
 #puts BenchApp.call(get_post)

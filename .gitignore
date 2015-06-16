@@ -1,3 +1,4 @@
-.crystal
-.shards
-libs
+/.crystal
+/.shards
+/libs
+/doc

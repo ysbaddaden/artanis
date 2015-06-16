@@ -31,18 +31,18 @@ class App < Artanis::Application
 end
 
 puts "ASSERTIONS:"
-puts App.call(Artanis::Request.new("GET", "/"))
-puts App.call(Artanis::Request.new("GET", "/posts"))
-puts App.call(Artanis::Request.new("GET", "/posts/1.json"))
-puts App.call(Artanis::Request.new("DELETE", "/blog/me/posts/123/comments/456.xml"))
-puts App.call(Artanis::Request.new("GET", "/wiki/category/page.html"))
-puts App.call(Artanis::Request.new("GET", "/kiwi/category/page.html"))
-puts App.call(Artanis::Request.new("GET", "/optional"))
-puts App.call(Artanis::Request.new("GET", "/optional.html"))
+puts App.call(HTTP::Request.new("GET", "/")).body
+puts App.call(HTTP::Request.new("GET", "/posts")).body
+puts App.call(HTTP::Request.new("GET", "/posts/1.json")).body
+puts App.call(HTTP::Request.new("DELETE", "/blog/me/posts/123/comments/456.xml")).body
+puts App.call(HTTP::Request.new("GET", "/wiki/category/page.html")).body
+puts App.call(HTTP::Request.new("GET", "/kiwi/category/page.html")).body
+puts App.call(HTTP::Request.new("GET", "/optional")).body
+puts App.call(HTTP::Request.new("GET", "/optional.html")).body
 
 puts
 puts "REFUTATIONS:"
-puts App.call(Artanis::Request.new("GET", "/fail"))
-puts App.call(Artanis::Request.new("GET", "/posts/1"))
-puts App.call(Artanis::Request.new("DELETE", "/blog/me/posts/123/comments/456"))
+puts App.call(HTTP::Request.new("GET", "/fail")).body
+puts App.call(HTTP::Request.new("GET", "/posts/1")).body
+puts App.call(HTTP::Request.new("DELETE", "/blog/me/posts/123/comments/456")).body
 

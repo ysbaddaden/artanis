@@ -1,2 +1,1 @@
-require "./request"
 require "./application"

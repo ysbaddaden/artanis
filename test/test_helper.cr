@@ -1,9 +1,14 @@
 require "minitest/autorun"
+require "http/request"
 require "../src/artanis"
 
 class App < Artanis::Application
   get "/" do
     "ROOT"
+  end
+
+  post "/forbidden" do
+    403
   end
 
   get "/posts" do
