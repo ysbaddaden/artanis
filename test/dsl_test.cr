@@ -78,6 +78,15 @@ class Artanis::DSLTest < Minitest::Test
     response = call("GET", "/halt/code/message")
     assert_equal 401, response.status_code
     assert_equal "please sign in", response.body
+
+    response = call("GET", "/halt/args")
+    assert_equal 403, response.status_code
+  end
+
+  def test_pass
+    response = call("GET", "/pass/check")
+    assert_equal 401, response.status_code
+    assert_equal "PASS NEXT", response.body
   end
 
   def call(request, method)

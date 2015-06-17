@@ -11,7 +11,6 @@ class HTTP::Response
 end
 
 module Artanis
-  # TODO: pass helper to skip to next route
   # TODO: etag helper to set http etag + last-modified headers and skip request if-modified-since
   # TODO: before(path, &block) and after(path, &block) macros
   # TODO: error(code, &block) macro to install handlers for returned statuses
@@ -48,21 +47,28 @@ module Artanis
       body yield
     end
 
-    # TODO: flatten case to a bunch of if (to support "pass")
+    macro call_action(method_name)
+      if %m = request.path.match({{ method_name.upcase.id }})
+        %ret = app.{{ method_name.id }}(%m)
+        break unless %ret == :pass
+      end
+    end
+
     macro call_method(method)
       app = new(request)
 
-      case request.path
-      {{
-        @type.methods
-          .map(&.name.stringify)
-          .select(&.starts_with?("match_#{method.id}"))
-          .map { |method_name| "when #{ method_name.upcase.id }\n         app.#{ method_name.id }($~)" }
-          .join("        \n")
-          .id
-      }}
-      else
+      while 1
+        {{
+          @type.methods
+            .map(&.name.stringify)
+            .select(&.starts_with?("match_#{method.id}"))
+            .map { |method_name| "call_action #{ method_name }" }
+            .join("\n        ")
+            .id
+        }}
+
         app.no_such_route
+        break
       end
 
       app

@@ -15,7 +15,6 @@ module Artanis
     # TODO: add conditions on routes
     #
     # OPTIMIZE: split the route in segments (?) would help to avoid double gsub (?)
-    # FIXME: block's original location is lost when passing args
     macro match(method, path, &block)
       {%
         prepared = path
@@ -49,20 +48,20 @@ module Artanis
             end
           end
 
-        {% if block.args.empty? %}
-          res = {{ yield }}
-        {% else %}
-          {% for arg, index in block.args %}
-            {{ arg.id }} = matchdata[{{ index + 1 }}]?
-          {% end %}
-          res = {{ block.body }}
+        {% for arg, index in block.args %}
+          {{ arg.id }} = matchdata[{{ index + 1 }}]?
         {% end %}
+
+        res = {{ yield }}
 
         if res.is_a?(Int)
           status res
         else
           body res
         end
+
+        # see https://github.com/manastech/crystal/issues/821
+        :ok
       end
     end
 
@@ -72,13 +71,17 @@ module Artanis
       {% else %}
         body {{ code_or_message }}.to_s
       {% end %}
-      return
+      return :halt
     end
 
     macro halt(code, message)
       status {{ code }}.to_i
       body {{ message }}.to_s
-      return
+      return :halt
+    end
+
+    macro pass
+      return :pass
     end
   end
 end

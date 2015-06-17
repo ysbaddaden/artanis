@@ -70,4 +70,23 @@ class App < Artanis::Application
     halt 401, "please sign in"
     "NEVER REACHED"
   end
+
+  get "/halt/:name" do |name|
+    halt 403
+    "NEVER REACHED"
+  end
+
+  get "/pass/check" do
+    status 401
+    pass
+    "NEVER REACHED"
+  end
+
+  get "/never_reached_by_skip" do
+    "NEVER REACHED BY SKIP"
+  end
+
+  get "/pass/*x" do
+    "PASS NEXT"
+  end
 end
