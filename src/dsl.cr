@@ -65,6 +65,48 @@ module Artanis
       end
     end
 
+    macro call_action(method_name)
+      if %m = request.path.match({{ method_name.upcase.id }})
+        %ret = {{ method_name.id }}(%m)
+        break unless %ret == :pass
+      end
+    end
+
+    macro call_method(method)
+      while 1
+        {{
+          @type.methods
+            .map(&.name.stringify)
+            .select(&.starts_with?("match_#{method.id}"))
+            .map { |method_name| "call_action #{ method_name }" }
+            .join("\n        ")
+            .id
+        }}
+        no_such_route
+        break
+      end
+    end
+
+    # OPTIMIZE: build a tree from path segments (?)
+    macro def call : HTTP::Response
+      case request.method.upcase
+      {{
+        @type.methods
+          .map(&.name.stringify)
+          .select(&.starts_with?("match_"))
+          .map { |method_name| method_name.split("_")[1] }
+          .uniq
+          .map { |method| "when #{method}\n        call_method(#{method})" }
+          .join("\n      ")
+          .id
+      }}
+      else
+        no_such_route
+      end
+
+      response
+    end
+
     macro halt(code_or_message = 200)
       {% if code_or_message.is_a?(NumberLiteral) %}
         status {{ code_or_message }}.to_i

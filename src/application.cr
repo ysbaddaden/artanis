@@ -47,52 +47,11 @@ module Artanis
       body yield
     end
 
-    macro call_action(method_name)
-      if %m = request.path.match({{ method_name.upcase.id }})
-        %ret = app.{{ method_name.id }}(%m)
-        break unless %ret == :pass
-      end
+    def self.call(request)
+      new(request).call
     end
 
-    macro call_method(method)
-      app = new(request)
-
-      while 1
-        {{
-          @type.methods
-            .map(&.name.stringify)
-            .select(&.starts_with?("match_#{method.id}"))
-            .map { |method_name| "call_action #{ method_name }" }
-            .join("\n        ")
-            .id
-        }}
-
-        app.no_such_route
-        break
-      end
-
-      app
-    end
-
-    # OPTIMIZE: build a tree from path segments (?)
-    macro def self.call(request) : HTTP::Response
-      case request.method.upcase
-      {{
-        @type.methods
-          .map(&.name.stringify)
-          .select(&.starts_with?("match_"))
-          .map { |method_name| method_name.split("_")[1] }
-          .uniq
-          .map { |method| "when #{method}\n        call_method(#{method}).response" }
-          .join("\n      ")
-          .id
-      }}
-      else
-        new(request).tap(&.no_such_route).response
-      end
-    end
-
-    protected def no_such_route
+    private def no_such_route
       not_found { "NOT FOUND: #{request.method} #{request.path}" }
     end
   end
