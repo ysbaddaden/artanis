@@ -78,11 +78,6 @@ Requests/sec:  68373.45
 Transfer/sec:      4.30MB
 ```
 
-
-NOTE: trying to use many wrk threads will cut the number of requests in half for
-each new thread. I suppose this is due to HTTP::Server and coroutines being
-single threaded for now (?)
-
 A better benchmark is available in `test/dsl_bench.cr` which monitors some
 limits of the generated Crystal code, like going over all routes to find nothing
 takes an awful lot of time, since it must build/execute a regular expression
