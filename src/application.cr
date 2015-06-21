@@ -1,4 +1,5 @@
 require "./dsl"
+require "./render"
 require "http/response"
 
 class HTTP::Response
@@ -14,6 +15,7 @@ module Artanis
   # TODO: etag helper to set http etag + last-modified headers and skip request if-modified-since
   class Application
     include DSL
+    include Render
 
     getter :request, :response, :params
 
@@ -51,6 +53,10 @@ module Artanis
 
     private def no_such_route
       not_found { "NOT FOUND: #{request.method} #{request.path}" }
+    end
+
+    macro inherited
+      gen_views
     end
   end
 end
