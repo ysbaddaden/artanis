@@ -1,4 +1,5 @@
 module Artanis
+  # TODO: error(code, &block) macro to install handlers for returned statuses
   module DSL
     FIND_PARAM_NAME = /:([\w\d_]+)/
 
@@ -10,14 +11,34 @@ module Artanis
       end
     {% end %}
 
+    macro match(method, path, &block)
+      gen_match "match", {{ method }}, {{ path }}, {{ block }}
+    end
+
+    macro before(path, &block)
+      gen_match "before", nil, {{ path }}, {{ block }}
+    end
+
+    macro before(&block)
+      gen_match "before", nil, "*splat", {{ block }}
+    end
+
+    macro after(path, &block)
+      gen_match "after", nil, {{ path }}, {{ block }}
+    end
+
+    macro after(&block)
+      gen_match "after", nil, "*splat", {{ block }}
+    end
+
     # TODO: use __match_000000 routes to more easily support whatever in routes (?)
     # TODO: match regexp routes
     # TODO: add conditions on routes
     #
     # OPTIMIZE: split the route in segments (?) would help to avoid double gsub (?)
-    macro match(method, path, &block)
+    macro gen_match(type, method, path, &block)
       {%
-        prepared = path
+       prepared = path
           .gsub(/\*[^\/.()]+/, "_SPLAT_")
           .gsub(/:[^\/.()]+/, "_PARAM_")
           .gsub(/\./, "_DOT_")
@@ -36,10 +57,12 @@ module Artanis
 
         method_name = prepared
           .gsub(/-/, "_MINUS_")
-      %}
-      MATCH_{{ method.upcase.id }}_{{ method_name.upcase.id }} = /\A{{ matcher.id }}\\Z/
 
-      def match_{{ method.upcase.id }}_{{ method_name.id }}(matchdata)
+        method_name = "#{method.upcase.id}_#{method_name.id}" if method
+      %}
+      {{ type.upcase.id }}_{{ method_name.upcase.id }} = /\A{{ matcher.id }}\\Z/
+
+      def {{ type.id }}_{{ method_name.id }}(matchdata)
         {{ path }}
           .scan(FIND_PARAM_NAME)
           .each_with_index do |m, i|
@@ -54,11 +77,13 @@ module Artanis
 
         res = {{ yield }}
 
-        if res.is_a?(Int)
-          status res
-        else
-          body res
-        end
+        {% if type == "match" %}
+          if res.is_a?(Int)
+            status res
+          else
+            body res
+          end
+        {% end %}
 
         # see https://github.com/manastech/crystal/issues/821
         :ok
@@ -68,23 +93,44 @@ module Artanis
     macro call_action(method_name)
       if %m = request.path.match({{ method_name.upcase.id }})
         %ret = {{ method_name.id }}(%m)
-        break unless %ret == :pass
+
+        {% if method_name.starts_with?("match_") %}
+          break unless %ret == :pass
+        {% end %}
       end
     end
 
     macro call_method(method)
+      {% method_names = @type.methods.map(&.name.stringify) %}
+
+      {{
+        method_names
+          .select(&.starts_with?("before_"))
+          .map { |method_name| "call_action #{ method_name }" }
+          .join("\n        ")
+          .id
+      }}
+
       while 1
         {{
-          @type.methods
-            .map(&.name.stringify)
+          method_names
             .select(&.starts_with?("match_#{method.id}"))
             .map { |method_name| "call_action #{ method_name }" }
             .join("\n        ")
             .id
         }}
+
         no_such_route
         break
       end
+
+      {{
+        method_names
+          .select(&.starts_with?("after_"))
+          .map { |method_name| "call_action #{ method_name }" }
+          .join("\n        ")
+          .id
+      }}
     end
 
     # OPTIMIZE: build a tree from path segments (?)

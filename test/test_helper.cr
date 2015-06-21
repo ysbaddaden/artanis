@@ -3,6 +3,22 @@ require "http/request"
 require "../src/artanis"
 
 class App < Artanis::Application
+  before do
+    response.headers.add("Before-Filter", "BEFORE=GLOBAL")
+  end
+
+  before "/forbidden" do
+    response.headers.add("Before-Filter", "FORBIDDEN")
+  end
+
+  after do
+    response.headers.add("After-Filter", "AFTER=GLOBAL")
+  end
+
+  after "/halt/*splat" do
+    response.headers.add("After-Filter", "HALT")
+  end
+
   get "/" do
     "ROOT"
   end

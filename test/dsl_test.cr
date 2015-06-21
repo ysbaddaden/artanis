@@ -89,6 +89,16 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal "PASS NEXT", response.body
   end
 
+  def test_before_filter
+    assert_equal "BEFORE=GLOBAL", call("GET", "/").headers["Before-Filter"]
+    assert_equal "BEFORE=GLOBAL,FORBIDDEN", call("GET", "/forbidden").headers["Before-Filter"]
+  end
+
+  def test_after_filter
+    assert_equal "AFTER=GLOBAL", call("GET", "/").headers["After-Filter"]
+    assert_equal "AFTER=GLOBAL,HALT", call("GET", "/halt/message").headers["After-Filter"]
+  end
+
   def call(request, method)
     App.call(HTTP::Request.new(request, method))
   end

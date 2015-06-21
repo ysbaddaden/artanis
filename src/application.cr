@@ -12,8 +12,6 @@ end
 
 module Artanis
   # TODO: etag helper to set http etag + last-modified headers and skip request if-modified-since
-  # TODO: before(path, &block) and after(path, &block) macros
-  # TODO: error(code, &block) macro to install handlers for returned statuses
   class Application
     include DSL
 
