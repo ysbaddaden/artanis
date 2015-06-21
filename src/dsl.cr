@@ -15,20 +15,12 @@ module Artanis
       gen_match "match", {{ method }}, {{ path }}, {{ block }}
     end
 
-    macro before(path, &block)
+    macro before(path = "*", &block)
       gen_match "before", nil, {{ path }}, {{ block }}
     end
 
-    macro before(&block)
-      gen_match "before", nil, "*splat", {{ block }}
-    end
-
-    macro after(path, &block)
+    macro after(path = "*", &block)
       gen_match "after", nil, {{ path }}, {{ block }}
-    end
-
-    macro after(&block)
-      gen_match "after", nil, "*splat", {{ block }}
     end
 
     # TODO: use __match_000000 routes to more easily support whatever in routes (?)
@@ -40,6 +32,7 @@ module Artanis
       {%
        prepared = path
           .gsub(/\*[^\/.()]+/, "_SPLAT_")
+          .gsub(/\*/, "_ANY_")
           .gsub(/:[^\/.()]+/, "_PARAM_")
           .gsub(/\./, "_DOT_")
           .gsub(/\//, "_SLASH_")
@@ -48,6 +41,7 @@ module Artanis
 
         matcher = prepared
           .gsub(/_SPLAT_/, "(.*?)")
+          .gsub(/_ANY_/, ".*?")
           .gsub(/_PARAM_/, "([^\\/]+)")
           .gsub(/_DOT_/, "\\.")
           .gsub(/_SLASH_/, "\\/")
