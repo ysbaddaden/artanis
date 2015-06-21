@@ -99,6 +99,10 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal "AFTER=GLOBAL,HALT", call("GET", "/halt/message").headers["After-Filter"]
   end
 
+  def test_filters_can_access_intance_variables
+    assert_equal "before filter, 2", FilterApp.call(HTTP::Request.new("GET", "/filters")).body
+  end
+
   def call(request, method)
     App.call(HTTP::Request.new(request, method))
   end

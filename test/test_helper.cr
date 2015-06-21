@@ -2,6 +2,24 @@ require "minitest/autorun"
 require "http/request"
 require "../src/artanis"
 
+class FilterApp < Artanis::Application
+  property! :count
+
+  before do
+    @message = "before filter"
+    @count = 1
+  end
+
+  get "/filters" do
+    self.count += 1
+    @message
+  end
+
+  after do
+    response.body += ", #{@count}"
+  end
+end
+
 class App < Artanis::Application
   before do
     response.headers.add("Before-Filter", "BEFORE=GLOBAL")
