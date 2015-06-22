@@ -147,23 +147,25 @@ module Artanis
       response
     end
 
+    ALWAYS_TRUE = true
+
     macro halt(code_or_message = 200)
       {% if code_or_message.is_a?(NumberLiteral) %}
         status {{ code_or_message }}.to_i
       {% else %}
         body {{ code_or_message }}.to_s
       {% end %}
-      return :halt
+      return :halt if ALWAYS_TRUE
     end
 
     macro halt(code, message)
       status {{ code }}.to_i
       body {{ message }}.to_s
-      return :halt
+      return :halt if ALWAYS_TRUE
     end
 
     macro pass
-      return :pass
+      return :pass if ALWAYS_TRUE
     end
   end
 end
