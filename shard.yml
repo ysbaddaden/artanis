@@ -7,4 +7,4 @@ author:
 dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
-    version: 0.1.1
+    commit: HEAD
