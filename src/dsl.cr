@@ -54,7 +54,7 @@ module Artanis
 
         method_name = "#{method.upcase.id}_#{method_name.id}" if method
       %}
-      {{ type.upcase.id }}_{{ method_name.upcase.id }} = /\A{{ matcher.id }}\\Z/
+      {{ type.upcase.id }}_{{ method_name.upcase.id }} = /\A{{ matcher.id }}\Z/
 
       def {{ type.id }}_{{ method_name.id }}(matchdata)
         {{ path }}
