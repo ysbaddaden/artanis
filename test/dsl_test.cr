@@ -32,7 +32,7 @@ class Artanis::DSLTest < Minitest::Test
   end
 
   def test_routes_with_unicode_chars
-    assert_equal "TELUGU", call("get", "/lang/తెలుగు").body
+    assert_equal "TELUGU", call("get", "/lang/#{URI.escape("తెలుగు")}").body
   end
 
   def test_routes_with_special_chars
