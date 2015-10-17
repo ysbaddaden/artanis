@@ -3,8 +3,6 @@ require "ecr/macros"
 module Artanis
   # TODO: render views in subpaths (eg: views/blog/posts/show.ecr => render_blog_posts_show_ecr)
   module Render
-    VIEWS_PATH = "views"
-
     macro ecr(name, layout = "layout")
       render {{ name }}, "ecr", layout: {{ layout }}
     end
@@ -19,9 +17,9 @@ module Artanis
       {% end %}
     end
 
-    macro gen_views
+    macro views_path(path)
       {%
-        views = `cd #{ VIEWS_PATH } 2>/dev/null && ls *.ecr || echo -n ""`
+        views = `cd #{ path } 2>/dev/null && ls *.ecr || echo -n ""`
           .lines
           .map(&.strip.gsub(/\.ecr/, ""))
       %}
@@ -33,7 +31,7 @@ module Artanis
 
         def render_{{ view.id }}_ecr(&block)
           String.build do |__str__|
-            embed_ecr "{{ VIEWS_PATH.id }}/{{ view.id }}.ecr", "__str__"
+            embed_ecr "{{ path.id }}/{{ view.id }}.ecr", "__str__"
           end
         end
       {% end %}

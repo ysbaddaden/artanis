@@ -56,7 +56,7 @@ module Artanis
     end
 
     macro inherited
-      gen_views
+      views_path "views"
     end
   end
 end

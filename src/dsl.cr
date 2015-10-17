@@ -85,7 +85,7 @@ module Artanis
     end
 
     macro call_action(method_name)
-      if %m = request.path.match({{ method_name.upcase.id }})
+      if %m = URI.unescape(request.path || "/").match({{ method_name.upcase.id }})
         %ret = {{ method_name.id }}(%m)
 
         {% if method_name.starts_with?("match_") %}

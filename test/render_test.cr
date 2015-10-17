@@ -1,7 +1,7 @@
 require "./test_helper"
 
 class RenderApp < Artanis::Application
-  VIEWS_PATH = "#{ __DIR__ }/views"
+  views_path "#{ __DIR__ }/views"
 
   get "/" do
     @message = "message: index"
