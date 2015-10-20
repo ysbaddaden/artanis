@@ -19,7 +19,7 @@ module Artanis
 
     macro views_path(path)
       {%
-        views = `cd #{ path } 2>/dev/null && find . -name "*.ecr" | cut -c 3- || true`
+        views = `cd #{ path } 2>/dev/null && find . -name "*.ecr" -type f | cut -c 3- || true`
           .lines
           .map(&.strip.gsub(/\.ecr/, "").gsub(/\//, "__SLASH__"))
       %}
