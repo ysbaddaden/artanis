@@ -19,9 +19,12 @@ module Artanis
 
     macro views_path(path)
       {%
-        views = `cd #{ path } 2>/dev/null && find . -name "*.ecr" -type f | cut -c 3- || true`
+        views = `cd #{ path } 2>/dev/null && find . -name "*.ecr" -type f || true`
           .lines
-          .map(&.strip.gsub(/\.ecr/, "").gsub(/\//, "__SLASH__"))
+          .map(&.strip
+            .gsub(/^\.\//, "")
+            .gsub(/\.ecr/, "")
+            .gsub(/\//, "__SLASH__"))
       %}
 
       {% for view in views %}
