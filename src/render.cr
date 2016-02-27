@@ -34,7 +34,7 @@ module Artanis
 
         def render_{{ view.id }}_ecr(&block)
           String.build do |__str__|
-            embed_ecr "{{ path.id }}/{{ view.gsub(/__SLASH__/, "/").id }}.ecr", "__str__"
+            ECR.embed "{{ path.id }}/{{ view.gsub(/__SLASH__/, "/").id }}.ecr", "__str__"
           end
         end
       {% end %}

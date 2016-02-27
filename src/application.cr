@@ -1,8 +1,8 @@
 require "./dsl"
 require "./render"
-require "http/response"
+require "http/client/response"
 
-class HTTP::Response
+class HTTP::Client::Response
   setter :status_code
 
   def body=(str)
@@ -23,7 +23,7 @@ module Artanis
     # TODO: parse request body and populate @params (?)
     def initialize(@request)
       @params = {} of String => String
-      @response = HTTP::Response.new(200, nil)
+      @response = HTTP::Client::Response.new(200)
     end
 
     def status(code)
