@@ -129,6 +129,7 @@ module Artanis
 
     # OPTIMIZE: build a tree from path segments (?)
     macro def call : HTTP::Response
+      {% if @type.methods.size > 0 %}
       case request.method.upcase
       {{
         @type.methods
@@ -143,7 +144,9 @@ module Artanis
       else
         no_such_route
       end
-
+      {% else %}
+      no_such_route
+      {% end %}
       response
     end
 

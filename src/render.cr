@@ -10,18 +10,21 @@ module Artanis
     macro render(name, engine, layout = "layout")
       {% if layout %}
         render_{{ layout.id }}_{{ engine.id }} do
-          render_{{ name.id }}_{{ engine.id }}
+          render_{{ name.gsub(/\//, "__SLASH__").id }}_{{ engine.id }}
         end
       {% else %}
-        render_{{ name.id }}_{{ engine.id }}
+        render_{{ name.gsub(/\//, "__SLASH__").id }}_{{ engine.id }}
       {% end %}
     end
 
     macro views_path(path)
       {%
-        views = `cd #{ path } 2>/dev/null && ls *.ecr || echo -n ""`
+        views = `cd #{ path } 2>/dev/null && find . -name "*.ecr" -type f || true`
           .lines
-          .map(&.strip.gsub(/\.ecr/, ""))
+          .map(&.strip
+            .gsub(/^\.\//, "")
+            .gsub(/\.ecr/, "")
+            .gsub(/\//, "__SLASH__"))
       %}
 
       {% for view in views %}
@@ -31,7 +34,7 @@ module Artanis
 
         def render_{{ view.id }}_ecr(&block)
           String.build do |__str__|
-            embed_ecr "{{ path.id }}/{{ view.id }}.ecr", "__str__"
+            embed_ecr "{{ path.id }}/{{ view.gsub(/__SLASH__/, "/").id }}.ecr", "__str__"
           end
         end
       {% end %}
