@@ -42,7 +42,7 @@ module Artanis
         matcher = prepared
           .gsub(/_SPLAT_/, "(.*?)")
           .gsub(/_ANY_/, ".*?")
-          .gsub(/_PARAM_/, "([^\\/]+)")
+          .gsub(/_PARAM_/, "([^\\/.]+)")
           .gsub(/_DOT_/, "\\.")
           .gsub(/_SLASH_/, "\\/")
           #.gsub(/_LPAREN_(.+?)_RPAREN_/, "(?:\1)")
@@ -128,25 +128,27 @@ module Artanis
     end
 
     # OPTIMIZE: build a tree from path segments (?)
-    macro def call : HTTP::Client::Response
+    macro def call : Artanis::Response
       {% if @type.methods.size > 0 %}
-      case request.method.upcase
-      {{
-        @type.methods
-          .map(&.name.stringify)
-          .select(&.starts_with?("match_"))
-          .map { |method_name| method_name.split("_")[1] }
-          .uniq
-          .map { |method| "when #{method}\n        call_method(#{method})" }
-          .join("\n      ")
-          .id
-      }}
-      else
-        no_such_route
-      end
+        case request.method.upcase
+        {{
+          @type.methods
+            .map(&.name.stringify)
+            .select(&.starts_with?("match_"))
+            .map { |method_name| method_name.split("_")[1] }
+            .uniq
+            .map { |method| "when #{method}\n        call_method(#{method})" }
+            .join("\n      ")
+            .id
+        }}
+        else
+          no_such_route
+        end
       {% else %}
-      no_such_route
+        no_such_route
       {% end %}
+
+      response.write_body
       response
     end
 

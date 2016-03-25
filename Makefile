@@ -1,15 +1,15 @@
-.PHONY: test
+.PHONY: test bench server wrk
+
+CRYSTAL_BIN ?= crystal
+
 test:
-	crystal test/*_test.cr
+	$(CRYSTAL_BIN) test/*_test.cr
 
-.PHONY: bench
 bench:
-	crystal run --release test/*_bench.cr
+	$(CRYSTAL_BIN) run --release test/*_bench.cr
 
-.PHONY: server
 server:
-	crystal run --release samples/server.cr
+	$(CRYSTAL_BIN) run --release samples/server.cr
 
-.PHONY: wrk
 wrk:
-	wrk -c 1000 -t 1 -d 30 http://localhost:9292/
+	wrk -c 1000 -t 2 -d 5 http://localhost:9292/

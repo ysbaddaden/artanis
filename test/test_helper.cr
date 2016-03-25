@@ -1,6 +1,14 @@
 require "minitest/autorun"
-require "http/request"
+require "http/server"
 require "../src/artanis"
+
+class Minitest::Test
+  def context(method, path, io = nil)
+    request = HTTP::Request.new(method, path)
+    response = HTTP::Server::Response.new(io || MemoryIO.new)
+    HTTP::Server::Context.new(request, response)
+  end
+end
 
 class FilterApp < Artanis::Application
   property! :count

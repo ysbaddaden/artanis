@@ -1,4 +1,5 @@
-require "./artanis"
+require "../src/artanis"
+require "http/server"
 
 class App < Artanis::Application
   get "/" do
@@ -30,19 +31,26 @@ class App < Artanis::Application
   end
 end
 
+def call(method, path)
+  request = HTTP::Request.new(method, path)
+  response = HTTP::Server::Response.new(200)
+  context = HTTP::Server::Context.new(request, response)
+  App.call(context)
+end
+
 puts "ASSERTIONS:"
-puts App.call(HTTP::Request.new("GET", "/")).body
-puts App.call(HTTP::Request.new("GET", "/posts")).body
-puts App.call(HTTP::Request.new("GET", "/posts/1.json")).body
-puts App.call(HTTP::Request.new("DELETE", "/blog/me/posts/123/comments/456.xml")).body
-puts App.call(HTTP::Request.new("GET", "/wiki/category/page.html")).body
-puts App.call(HTTP::Request.new("GET", "/kiwi/category/page.html")).body
-puts App.call(HTTP::Request.new("GET", "/optional")).body
-puts App.call(HTTP::Request.new("GET", "/optional.html")).body
-
+puts call("GET", "/").body
+puts call("GET", "/posts").body
+puts call("GET", "/posts/1.json").body
+puts call("DELETE", "/blog/me/posts/123/comments/456.xml").body
+puts call("GET", "/wiki/category/page.html").body
+puts call("GET", "/kiwi/category/page.html").body
+puts call("GET", "/optional").body
+puts call("GET", "/optional.html").body
 puts
-puts "REFUTATIONS:"
-puts App.call(HTTP::Request.new("GET", "/fail")).body
-puts App.call(HTTP::Request.new("GET", "/posts/1")).body
-puts App.call(HTTP::Request.new("DELETE", "/blog/me/posts/123/comments/456")).body
 
+puts "REFUTATIONS:"
+puts call("GET", "/fail").body
+puts call("GET", "/posts/1").body
+puts call("DELETE", "/blog/me/posts/123/comments/456").body
+puts

@@ -38,7 +38,14 @@ class Artanis::RenderTest < Minitest::Test
     assert_match /message: custom/, response.body
   end
 
-  def call(request, method)
-    RenderApp.call(HTTP::Request.new(request, method))
+  def test_flushes_body_to_io
+    call("GET", "/custom", io = MemoryIO.new)
+    body = io.to_s
+    assert_match /LAYOUT: CUSTOM/, body
+    assert_match /message: custom/, body
+  end
+
+  def call(method, path, io = nil)
+    RenderApp.call(context(method, path, io))
   end
 end

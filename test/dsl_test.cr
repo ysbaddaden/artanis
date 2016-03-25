@@ -100,10 +100,10 @@ class Artanis::DSLTest < Minitest::Test
   end
 
   def test_filters_can_access_intance_variables
-    assert_equal "before filter, 2", FilterApp.call(HTTP::Request.new("GET", "/filters")).body
+    assert_equal "before filter, 2", FilterApp.call(context("GET", "/filters")).body
   end
 
   def call(request, method)
-    App.call(HTTP::Request.new(request, method))
+    App.call(context(request, method))
   end
 end

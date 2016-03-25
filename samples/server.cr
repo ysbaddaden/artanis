@@ -6,24 +6,19 @@ class App < Artanis::Application
     "ROOT"
   end
 
-  get "/posts" do
-    "here are some posts"
-  end
-
-  get "/posts/:id.:format" do
-    p params["id"]
-    p params["format"]
-    "OK"
+  get "/fast" do
+    response << "FAST"
+    nil
   end
 
   get "/posts/:post_id/comments/:id(.:format)" do |post_id, id, format|
-    p params["format"]?
+    p params
     200
   end
 end
 
-server = HTTP::Server.new(9292) do |request|
-  App.call(request)
+server = HTTP::Server.new(9292) do |context|
+  App.call(context)
 end
 
 puts "Listening on http://0.0.0.0:9292"
