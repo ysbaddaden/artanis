@@ -23,10 +23,6 @@ class App < Artanis::Application
     response.headers.add("X-Frame-Options", "SAMEORIGIN")
   end
 
-  get "/sdf" do
-    ecr "index", "index"
-  end
-  
   get "/filters" do
     response.body = "Hello"
   end
