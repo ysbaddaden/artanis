@@ -1,6 +1,7 @@
 require "./dsl"
 require "./render"
 require "./response"
+require "./logging"
 require "http/server/context"
 
 module Artanis
@@ -8,15 +9,16 @@ module Artanis
   class Application
     include DSL
     include Render
-
+    
     getter :context, :params
 
     # TODO: parse query string and populate @params
     # TODO: parse request body and populate @params (?)
     def initialize(@context : HTTP::Server::Context)
       @params = {} of String => String
+      @log = Artanis::Logging.new
     end
-
+    
     def request
       context.request
     end
