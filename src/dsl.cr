@@ -90,6 +90,8 @@ module Artanis
 
         {% if method_name.starts_with?("match_") %}
           break unless %ret == :pass
+        {% else %}
+          break if %ret == :halt
         {% end %}
       end
     end
@@ -97,34 +99,38 @@ module Artanis
     macro call_method(method)
       {% method_names = @type.methods.map(&.name.stringify) %}
 
-      {{
-        method_names
-          .select(&.starts_with?("before_"))
-          .map { |method_name| "call_action #{ method_name }" }
-          .join("\n        ")
-          .id
-      }}
-
       while 1
         {{
           method_names
-            .select(&.starts_with?("match_#{method.id}"))
+            .select(&.starts_with?("before_"))
             .map { |method_name| "call_action #{ method_name }" }
             .join("\n        ")
             .id
         }}
 
-        no_such_route
+        while 1
+          {{
+            method_names
+              .select(&.starts_with?("match_#{method.id}"))
+              .map { |method_name| "call_action #{ method_name }" }
+              .join("\n        ")
+              .id
+          }}
+
+          no_such_route
+          break
+        end
+
+        {{
+          method_names
+            .select(&.starts_with?("after_"))
+            .map { |method_name| "call_action #{ method_name }" }
+            .join("\n        ")
+            .id
+        }}
+
         break
       end
-
-      {{
-        method_names
-          .select(&.starts_with?("after_"))
-          .map { |method_name| "call_action #{ method_name }" }
-          .join("\n        ")
-          .id
-      }}
     end
 
     # OPTIMIZE: build a tree from path segments (?)

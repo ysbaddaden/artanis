@@ -103,7 +103,23 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal "before filter, 2", FilterApp.call(context("GET", "/filters")).body
   end
 
-  def call(request, method)
-    App.call(context(request, method))
+  def test_before_filter_can_halt
+    response = FilterApp.call(context("GET", "/filters", headers: HTTP::Headers{
+      "halt" => "before"
+    }))
+    assert_equal 401, response.status_code
+    assert_empty response.body
+  end
+
+  def test_after_filter_can_halt
+    response = FilterApp.call(context("GET", "/filters", headers: HTTP::Headers{
+      "halt" => "after"
+    }))
+    assert_equal 200, response.status_code
+    assert_equal "before filter", response.body
+  end
+
+  def call(request, method, headers = nil)
+    App.call(context(request, method, io: nil, headers: headers))
   end
 end
