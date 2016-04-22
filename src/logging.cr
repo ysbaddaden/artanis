@@ -1,3 +1,5 @@
+require "logger"
+
 module Artanis
 
   class Logging
@@ -7,16 +9,16 @@ module Artanis
     
     def initialize
       @logfile = "artanis.log"
+      @log = Logger.new(STDOUT)
+      @log.level = Logger::INFO
+      @logtofile = Logger.new(STDOUT)
+      @logtofile.level = Logger::INFO
     end
     
     def setlogfile(name)
       @logfile = name
-    end
-    
-    def openfile(filename, entry)
-      File.open("#{filename}", mode: "a") {|n|
-        n.puts(entry)
-      }
+      @logtofile = Logger.new(File.open("#{@logfile}", mode: "a"))
+      @logtofile.level = Logger::INFO
     end
     
     def addentry(entry, code)
@@ -24,8 +26,8 @@ module Artanis
       host = entry.headers["Host"]
       path = entry.path
       msg = "#{Time.now} #{code} #{method} #{host} #{path}"
-      puts msg
-      openfile(@logfile, msg)
+      @log.info("#{msg}")
+      @logtofile.info("#{msg}")
     end
         
   end
