@@ -1,6 +1,8 @@
 module Artanis
-  # TODO: error(code, &block) macro to install handlers for returned statuses
   module DSL
+    # TODO: error(code, &block) macro to install handlers for returned statuses
+
+    # :nodoc:
     FIND_PARAM_NAME = /:([\w\d_]+)/
 
     {% for method in %w(head options get post put patch delete) %}
@@ -26,8 +28,6 @@ module Artanis
     # TODO: use __match_000000 routes to more easily support whatever in routes (?)
     # TODO: match regexp routes
     # TODO: add conditions on routes
-    #
-    # OPTIMIZE: split the route in segments (?) would help to avoid double gsub (?)
     macro gen_match(type, method, path, &block)
       {%
        prepared = path
@@ -100,58 +100,46 @@ module Artanis
       {% method_names = @type.methods.map(&.name.stringify) %}
 
       while 1
-        {{
-          method_names
-            .select(&.starts_with?("before_"))
-            .map { |method_name| "call_action #{ method_name }" }
-            .join("\n        ")
-            .id
-        }}
+        {% for method_name in method_names.select(&.starts_with?("before_")) %}
+          call_action {{ method_name }}
+        {% end %}
 
         while 1
-          {{
-            method_names
-              .select(&.starts_with?("match_#{method.id}"))
-              .map { |method_name| "call_action #{ method_name }" }
-              .join("\n        ")
-              .id
-          }}
+          {% for method_name in method_names.select(&.starts_with?("match_#{ method.id }")) %}
+            call_action {{ method_name }}
+          {% end %}
 
           no_such_route
           break
         end
 
-        {{
-          method_names
-            .select(&.starts_with?("after_"))
-            .map { |method_name| "call_action #{ method_name }" }
-            .join("\n        ")
-            .id
-        }}
+        {% for method_name in method_names.select(&.starts_with?("after_")) %}
+          call_action {{ method_name }}
+        {% end %}
 
         break
       end
     end
 
-    # OPTIMIZE: build a tree from path segments (?)
     macro def call : Artanis::Response
-      {% if @type.methods.size > 0 %}
+      {%
+         methods = @type.methods
+          .map(&.name.stringify)
+          .select(&.starts_with?("match_"))
+          .map { |method_name| method_name.split("_")[1] }
+          .uniq
+      %}
+
+      {% if methods.empty? %}
+        no_such_route
+      {% else %}
         case request.method.upcase
-        {{
-          @type.methods
-            .map(&.name.stringify)
-            .select(&.starts_with?("match_"))
-            .map { |method_name| method_name.split("_")[1] }
-            .uniq
-            .map { |method| "when #{method}\n        call_method(#{method})" }
-            .join("\n      ")
-            .id
-        }}
+          {% for method in methods %}
+            when {{ method }} then call_method {{ method }}
+          {% end %}
         else
           no_such_route
         end
-      {% else %}
-        no_such_route
       {% end %}
 
       response.write_body
