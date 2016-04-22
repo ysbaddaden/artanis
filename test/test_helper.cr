@@ -3,8 +3,8 @@ require "http/server"
 require "../src/artanis"
 
 class Minitest::Test
-  def context(method, path, io = nil)
-    request = HTTP::Request.new(method, path)
+  def context(method, path, io = nil, headers = nil)
+    request = HTTP::Request.new(method, path, headers || HTTP::Headers.new)
     response = HTTP::Server::Response.new(io || MemoryIO.new)
     HTTP::Server::Context.new(request, response)
   end
@@ -14,6 +14,10 @@ class FilterApp < Artanis::Application
   property! :count
 
   before do
+    halt 401 if request.headers["halt"]? == "before"
+  end
+
+  before "/filters" do
     @message = "before filter"
     @count = 1
   end
@@ -24,6 +28,10 @@ class FilterApp < Artanis::Application
   end
 
   after do
+    halt if request.headers["halt"]? == "after"
+  end
+
+  after "/filters" do
     response.body += ", #{@count}"
   end
 end

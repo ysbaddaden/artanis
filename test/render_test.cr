@@ -47,6 +47,6 @@ class Artanis::RenderTest < Minitest::Test
   end
 
   def call(method, path, io = nil)
-    RenderApp.call(context(method, path, io))
+    RenderApp.call(context(method, path, io: io))
   end
 end
