@@ -157,7 +157,17 @@ module Artanis
       response.write_body
       response
     end
+    
+    macro logging(enable)
+      {% if enable == true %}
+        @log.addentry(request, response.status_code)
+      {% end %}
+    end
 
+    macro setlogfile
+      @log.setlogfile(logfilename)
+    end
+    
     ALWAYS_TRUE = true
 
     macro halt(code_or_message = 200)
