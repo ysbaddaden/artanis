@@ -1,10 +1,11 @@
 require "minitest/autorun"
 require "http/server"
 require "../src/artanis"
+require "json"
 
 class Minitest::Test
-  def context(method, path, io = nil, headers = nil)
-    request = HTTP::Request.new(method, path, headers || HTTP::Headers.new)
+  def context(method, path, io = nil, headers = nil, body = nil)
+    request = HTTP::Request.new(method, path, headers || HTTP::Headers.new, body)
     response = HTTP::Server::Response.new(io || MemoryIO.new)
     HTTP::Server::Context.new(request, response)
   end
@@ -138,5 +139,13 @@ class App < Artanis::Application
 
   get "/pass/*x" do
     "PASS NEXT"
+  end
+
+  get "/params/:id" do
+    params.to_json
+  end
+
+  post "/params" do
+    params.to_json
   end
 end

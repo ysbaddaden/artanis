@@ -119,7 +119,24 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal "before filter", response.body
   end
 
-  def call(request, method, headers = nil)
-    App.call(context(request, method, io: nil, headers: headers))
+  def test_query_params
+    assert_equal({ "id" => "123" }, JSON.parse(call("GET", "/params/123").body).as_h)
+    assert_equal({ "id" => "123", "q" => "term" }, JSON.parse(call("GET", "/params/123?id=456&q=term").body).as_h)
+    assert_equal({ "id" => "123", "bid" => "456" }, JSON.parse(call("GET", "/params/123?bid=456").body).as_h)
+  end
+
+  def test_body_params
+    response = call "POST", "/params",
+      headers: HTTP::Headers{ "Content-Type" => "application/x-www-form-urlencoded" }
+    assert_empty JSON.parse(response.body).as_h
+
+    response = call "POST", "/params?id=789&lang=fr",
+      headers: HTTP::Headers{ "Content-Type" => "application/x-www-form-urlencoded" },
+      body: "q=term&id=123"
+    assert_equal({ "id" => "123", "q" => "term", "lang" => "fr" }, JSON.parse(response.body).as_h)
+  end
+
+  def call(request, method, headers = nil, body = nil)
+    App.call(context(request, method, io: nil, headers: headers, body: body))
   end
 end

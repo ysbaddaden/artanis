@@ -1,3 +1,5 @@
+require "http/params"
+
 module Artanis
   module DSL
     # TODO: error(code, &block) macro to install handlers for returned statuses
@@ -57,6 +59,9 @@ module Artanis
       {{ type.upcase.id }}_{{ method_name.upcase.id }} = /\A{{ matcher.id }}\Z/
 
       def {{ type.id }}_{{ method_name.id }}(matchdata)
+        parse_query_params
+        parse_body_params
+
         {{ path }}
           .scan(FIND_PARAM_NAME)
           .each_with_index do |m, i|
@@ -165,6 +170,19 @@ module Artanis
 
     macro pass
       return :pass if ALWAYS_TRUE
+    end
+
+    private def parse_query_params
+      if query = request.query
+        HTTP::Params.parse(query) { |key, value| @params[key] = value }
+      end
+    end
+
+    private def parse_body_params
+      return unless request.headers["Content-Type"]? == "application/x-www-form-urlencoded"
+      if body = request.body
+        HTTP::Params.parse(body) { |key, value| @params[key] = value }
+      end
     end
   end
 end
