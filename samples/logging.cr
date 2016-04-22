@@ -5,15 +5,6 @@ class App < Artanis::Application
 
   views_path "#{ __DIR__ }/views"  
  
-  
-  head "/" do
-   "Head request"
-  end
-
-  get "/" do
-    @message = "message: index"
-  end
-  
   before do
     logfilename = "logging.log"
     setlogfile
@@ -23,8 +14,16 @@ class App < Artanis::Application
     response.headers.add("X-Frame-Options", "SAMEORIGIN")
   end
 
-  get "/filters" do
-    response.body = "Hello"
+  head "/" do
+   "Head request"
+  end
+
+  get "/" do
+    "Index"
+  end
+
+  get "/sample" do
+    "Sample Page"
   end
 
   after do
