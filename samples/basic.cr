@@ -1,5 +1,4 @@
 require "../src/artanis"
-require "http/server"
 
 class App < Artanis::Application
   get "/" do

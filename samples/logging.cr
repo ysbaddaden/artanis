@@ -1,6 +1,5 @@
 require "../src/artanis"
 require "../src/logging"
-require "http/server"
 
 class LogApp < Artanis::Application
   include Artanis::Logging

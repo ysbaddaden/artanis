@@ -1,7 +1,7 @@
 require "./dsl"
 require "./render"
 require "./response"
-require "http/server/context"
+require "http/server"
 
 module Artanis
   # TODO: etag helper to set http etag + last-modified headers and skip request if-modified-since
