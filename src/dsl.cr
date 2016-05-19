@@ -90,7 +90,7 @@ module Artanis
     end
 
     macro call_action(method_name)
-      if %m = URI.unescape(request.path || "/").match({{ method_name.upcase.id }})
+      if %m = URI.unescape(request.path || "/").match({{@type}}::{{ method_name.upcase.id }})
         %ret = {{ method_name.id }}(%m)
 
         {% if method_name.starts_with?("match_") %}
@@ -127,6 +127,7 @@ module Artanis
     end
 
     macro def call : Artanis::Response
+      {% begin %}
       {%
          methods = @type.methods
           .map(&.name.stringify)
@@ -149,6 +150,7 @@ module Artanis
 
       response.write_body
       response
+      {% end %}
     end
 
     ALWAYS_TRUE = true
