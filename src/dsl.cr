@@ -9,7 +9,7 @@ module Artanis
 
     {% for method in %w(head options get post put patch delete) %}
       macro {{ method.id }}(path, &block)
-        match {{ method }}, \{\{ path }} do \{\{ (block.args.empty? ? "" : "|#{block.args.argify}|").id }}
+        match {{ method }}, \{\{ path }} do \{\{ (block.args.empty? ? "" : "|#{block.args.splat}|").id }}
           \{\{ yield }}
         end
       end
@@ -183,7 +183,7 @@ module Artanis
     private def parse_body_params
       return unless request.headers["Content-Type"]? == "application/x-www-form-urlencoded"
       if body = request.body
-        HTTP::Params.parse(body) { |key, value| @params[key] = value }
+        HTTP::Params.parse(body.gets_to_end) { |key, value| @params[key] = value }
       end
     end
   end

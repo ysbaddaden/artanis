@@ -6,7 +6,7 @@ require "json"
 class Minitest::Test
   def context(method, path, io = nil, headers = nil, body = nil)
     request = HTTP::Request.new(method, path, headers || HTTP::Headers.new, body)
-    response = HTTP::Server::Response.new(io || MemoryIO.new)
+    response = HTTP::Server::Response.new(io || IO::Memory.new)
     HTTP::Server::Context.new(request, response)
   end
 end

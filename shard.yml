@@ -4,6 +4,8 @@ version: 0.1.0
 author:
   - Julien Portalier <julien@portalier.com>
 
+crystal: 0.21.1
+
 development_dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
