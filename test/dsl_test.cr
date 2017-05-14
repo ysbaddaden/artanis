@@ -136,6 +136,13 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal({ "id" => "123", "q" => "term", "lang" => "fr" }, JSON.parse(response.body).as_h)
   end
 
+  def test_encoded_body
+    response = call "POST", "/params_body?id=789&lang=fr",
+      headers: HTTP::Headers{ "Content-Type" => "application/x-www-form-urlencoded" },
+      body: "q=term&id=123"
+    assert_equal({ "body" => "q=term&id=123", "id" => "789", "lang" => "fr" }, JSON.parse(response.body).as_h)
+  end
+
   def call(request, method, headers = nil, body = nil)
     App.call(context(request, method, io: nil, headers: headers, body: body))
   end

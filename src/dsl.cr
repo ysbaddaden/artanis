@@ -58,7 +58,6 @@ module Artanis
 
       def {{ type.id }}_{{ method_name.id }}(matchdata)
         parse_query_params
-        parse_body_params
 
         {{ path }}
           .scan(FIND_PARAM_NAME)
@@ -177,13 +176,6 @@ module Artanis
       if !@query_parsed && query
         HTTP::Params.parse(query) { |key, value| @params[key] = value }
         @query_parsed = true
-      end
-    end
-
-    private def parse_body_params
-      return unless request.headers["Content-Type"]? == "application/x-www-form-urlencoded"
-      if body = request.body
-        HTTP::Params.parse(body.gets_to_end) { |key, value| @params[key] = value }
       end
     end
   end
