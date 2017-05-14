@@ -9,16 +9,22 @@ module Artanis
     include DSL
     include Render
 
-    getter :context, :params
+    getter :context
 
     # TODO: parse query string and populate @params
     # TODO: parse request body and populate @params (?)
     def initialize(@context : HTTP::Server::Context)
       @params = {} of String => String
+      @parsed_body = false
     end
 
     def request
       context.request
+    end
+
+    def params
+      parse_body_params
+      @params
     end
 
     def response
@@ -52,6 +58,15 @@ module Artanis
 
     private def no_such_route
       not_found { "NOT FOUND: #{request.method} #{request.path}" }
+    end
+
+    private def parse_body_params
+      return if @parsed_body
+      @parsed_body = true
+      return unless request.headers["Content-Type"]? == "application/x-www-form-urlencoded"
+      if body = request.body
+        HTTP::Params.parse(body.gets_to_end) { |key, value| @params[key] = value }
+      end
     end
 
     macro inherited

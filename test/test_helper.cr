@@ -148,4 +148,8 @@ class App < Artanis::Application
   post "/params" do
     params.to_json
   end
+
+  post "/params_body" do
+    {"body" => request.body.try &.gets_to_end}.merge(params).to_json
+  end
 end
