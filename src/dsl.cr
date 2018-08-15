@@ -9,22 +9,20 @@ module Artanis
 
     {% for method in %w(head options get post put patch delete) %}
       macro {{ method.id }}(path, &block)
-        match {{ method }}, \{\{ path }} do \{\{ (block.args.empty? ? "" : "|#{block.args.splat}|").id }}
-          \{\{ yield }}
-        end
+        match({{ method }}, \{\{ path }}) \{\{ block }}
       end
     {% end %}
 
     macro match(method, path, &block)
-      gen_match "match", {{ method }}, {{ path }}, {{ block }}
+      gen_match("match", {{ method }}, {{ path }}) {{ block }}
     end
 
     macro before(path = "*", &block)
-      gen_match "before", nil, {{ path }}, {{ block }}
+      gen_match("before", nil, {{ path }}) {{ block }}
     end
 
     macro after(path = "*", &block)
-      gen_match "after", nil, {{ path }}, {{ block }}
+      gen_match("after", nil, {{ path }}) {{ block }}
     end
 
     # TODO: use __match_000000 routes to more easily support whatever in routes (?)
@@ -126,7 +124,7 @@ module Artanis
       end
     end
 
-    macro def call : Artanis::Response
+    def call : Artanis::Response
       {% begin %}
       {%
          methods = @type.methods
@@ -175,8 +173,10 @@ module Artanis
     end
 
     private def parse_query_params
-      if query = request.query
+      query = request.query
+      if !@query_parsed && query
         HTTP::Params.parse(query) { |key, value| @params[key] = value }
+        @query_parsed = true
       end
     end
 
