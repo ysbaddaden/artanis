@@ -16,9 +16,8 @@ class App < Artanis::Application
   end
 end
 
-server = HTTP::Server.new(9292) do |context|
-  App.call(context)
-end
+server = HTTP::Server.new { |context| App.call(context) }
+server.bind_tcp(9292)
 
 puts "Listening on http://0.0.0.0:9292"
 server.listen

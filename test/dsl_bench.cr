@@ -3,10 +3,10 @@ require "./test_helper"
 N = 10_000
 
 def bench(title)
-  start = Time.now
-  N.times { yield }
-  elapsed = (Time.now - start).to_f
-  puts "#{title}: #{(elapsed / N * 1_000_000).round(2)} µs"
+  elapsed = Time.measure do
+    N.times { yield }
+  end
+  puts "#{title}: #{(elapsed.to_f / N * 1_000_000).round(2)} µs"
 end
 
 class BenchApp < Artanis::Application
@@ -27,7 +27,7 @@ end
 
 def context(method, path)
   request = HTTP::Request.new(method, path)
-  response = HTTP::Server::Response.new(MemoryIO.new)
+  response = HTTP::Server::Response.new(IO::Memory.new)
   HTTP::Server::Context.new(request, response)
 end
 

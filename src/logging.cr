@@ -1,17 +1,17 @@
-require "logger"
+require "log"
 
 module Artanis::Logging
   module ClassMethods
     # NOTE: until https://github.com/crystal-lang/crystal/issues/2458
     macro extended
-      @@logger : Logger?
+      @@logger : Log?
     end
 
     def logger
-      @@logger ||= Logger.new(STDERR)
+      @@logger ||= Log.for("artanis")
     end
 
-    def logger=(@@logger : Logger)
+    def logger=(@@logger : Log)
     end
   end
 
@@ -19,11 +19,11 @@ module Artanis::Logging
     extend ClassMethods
   end
 
-  {% for constant in Logger::Severity.constants %}
+  {% for constant in Log::Severity.constants %}
     {% name = constant.downcase.id %}
 
     def {{name}}(message)
-      self.class.logger.{{name}}(message)
+      self.class.logger.{{name}} { message }
     end
 
     def {{name}}

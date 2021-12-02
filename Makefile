@@ -1,15 +1,18 @@
-.PHONY: test bench server wrk
+.POSIX:
 
-CRYSTAL_BIN ?= crystal
+CRYSTAL = crystal
+CRFLAGS =
 
-test:
-	$(CRYSTAL_BIN) test/*_test.cr
+test: .phony
+	$(CRYSTAL) run $(CRFLAGS) test/*_test.cr
 
-bench:
-	$(CRYSTAL_BIN) run --release test/*_bench.cr
+bench: .phony
+	$(CRYSTAL) run $(CRFLAGS) --release test/*_bench.cr
 
-server:
-	$(CRYSTAL_BIN) run --release samples/server.cr
+server: .phony
+	$(CRYSTAL) run $(CRFLAGS) --release samples/server.cr
 
-wrk:
+wrk: .phony
 	wrk -c 1000 -t 2 -d 5 http://localhost:9292/
+
+.phony:

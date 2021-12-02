@@ -14,7 +14,6 @@ class LogApp < Artanis::Application
   end
 end
 
-server = HTTP::Server.new(9292) do |context|
-  LogApp.call(context)
-end
+server = HTTP::Server.new { |context| LogApp.call(context) }
+server.bind_tcp(9292)
 server.listen

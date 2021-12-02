@@ -39,7 +39,7 @@ class Artanis::RenderTest < Minitest::Test
   end
 
   def test_writes_body_to_io
-    response = call("GET", "/custom", io = MemoryIO.new)
+    response = call("GET", "/custom", io = IO::Memory.new)
     response.close # body is buffered by HTTP::Response::Output
     body = io.to_s
     assert_match /LAYOUT: CUSTOM/, body

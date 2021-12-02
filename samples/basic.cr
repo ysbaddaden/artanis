@@ -32,7 +32,7 @@ end
 
 def call(method, path)
   request = HTTP::Request.new(method, path)
-  response = HTTP::Server::Response.new(200)
+  response = HTTP::Server::Response.new(IO::Memory.new)
   context = HTTP::Server::Context.new(request, response)
   App.call(context)
 end

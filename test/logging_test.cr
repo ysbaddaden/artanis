@@ -16,22 +16,22 @@ class Artanis::LoggingTest < Minitest::Test
     end
   end
 
-  def io
-    @io ||= MemoryIO.new
+  private def backend
+    @backend ||= Log::MemoryBackend.new
   end
 
   def setup
-    LogApp.logger = Logger.new(io)
-    LogApp.logger.level = Logger::Severity::DEBUG
+    LogApp.logger = Log.for("log_app")
+    Log.setup("log_app", :debug, backend)
   end
 
   def test_debug
     LogApp.call(context("GET", "/debug"))
-    assert_match /this is a debug message$/, io.to_s
+    assert_equal ["this is a debug message"], backend.entries.map(&.message)
   end
 
   def test_info
     LogApp.call(context("GET", "/info"))
-    assert_match /some info message$/, io.to_s
+    assert_equal ["some info message"], backend.entries.map(&.message)
   end
 end
