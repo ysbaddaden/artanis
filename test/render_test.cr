@@ -16,9 +16,19 @@ class RenderApp < Artanis::Application
   get "/raw" do
     ecr "raw", layout: false
   end
+
+  get "/raw.json" do
+    contents = { "row" => "message" }
+    json contents
+  end
 end
 
 class Artanis::RenderTest < Minitest::Test
+  def test_json
+    response = call("GET", "/raw.json")
+    assert_equal({ "row" => "message" }, JSON.parse(response.body))
+  end
+
   def test_render
     response = call("GET", "/")
     assert_match /INDEX/, response.body

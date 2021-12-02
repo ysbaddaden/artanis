@@ -1,7 +1,6 @@
 require "minitest/autorun"
 require "http/server"
 require "../src/artanis"
-require "json"
 
 class Minitest::Test
   def context(method, path, io = nil, headers = nil, body = nil)
@@ -142,14 +141,14 @@ class App < Artanis::Application
   end
 
   get "/params/:id" do
-    params.to_json
+    json(params)
   end
 
   post "/params" do
-    params.to_json
+    json(params)
   end
 
   post "/params_body" do
-    {"body" => request.body.try &.gets_to_end}.merge(params).to_json
+    json({"body" => request.body.try &.gets_to_end}.merge(params))
   end
 end

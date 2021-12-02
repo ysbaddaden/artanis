@@ -1,8 +1,14 @@
 require "ecr/macros"
+require "json"
 
 module Artanis
   # TODO: render views in subpaths (eg: views/blog/posts/show.ecr => render_blog_posts_show_ecr)
   module Render
+    def json(contents)
+      header "Content-Type", "application/json; charset=utf-8"
+      body contents.to_json
+    end
+
     macro ecr(name, layout = "layout")
       render {{ name }}, "ecr", layout: {{ layout }}
     end
