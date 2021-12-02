@@ -101,12 +101,12 @@ module Artanis
     macro call_method(method)
       {% method_names = @type.methods.map(&.name.stringify) %}
 
-      while 1
+      loop do
         {% for method_name in method_names.select(&.starts_with?("before_")) %}
           call_action {{ method_name }}
         {% end %}
 
-        while 1
+        loop do
           {% for method_name in method_names.select(&.starts_with?("match_#{ method.id }")) %}
             call_action {{ method_name }}
           {% end %}
@@ -150,25 +150,23 @@ module Artanis
       {% end %}
     end
 
-    ALWAYS_TRUE = true
-
     macro halt(code_or_message = 200)
       {% if code_or_message.is_a?(NumberLiteral) %}
         status {{ code_or_message }}.to_i
       {% else %}
         body {{ code_or_message }}.to_s
       {% end %}
-      return :halt if ALWAYS_TRUE
+      return :halt
     end
 
     macro halt(code, message)
       status {{ code }}.to_i
       body {{ message }}.to_s
-      return :halt if ALWAYS_TRUE
+      return :halt
     end
 
     macro pass
-      return :pass if ALWAYS_TRUE
+      return :pass
     end
 
     private def parse_query_params

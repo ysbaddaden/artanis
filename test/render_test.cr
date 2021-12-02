@@ -46,7 +46,7 @@ class Artanis::RenderTest < Minitest::Test
     assert_match /message: custom/, body
   end
 
-  def call(method, path, io = nil)
+  private def call(method, path, io = nil)
     RenderApp.call(context(method, path, io: io))
   end
 end

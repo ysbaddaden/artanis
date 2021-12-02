@@ -2,7 +2,6 @@ require "log"
 
 module Artanis::Logging
   module ClassMethods
-    # NOTE: until https://github.com/crystal-lang/crystal/issues/2458
     macro extended
       @@logger : Log?
     end

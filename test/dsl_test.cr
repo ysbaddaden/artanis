@@ -143,7 +143,7 @@ class Artanis::DSLTest < Minitest::Test
     assert_equal({ "body" => "q=term&id=123", "id" => "789", "lang" => "fr" }, JSON.parse(response.body).as_h)
   end
 
-  def call(request, method, headers = nil, body = nil)
+  private def call(request, method, headers = nil, body = nil)
     App.call(context(request, method, io: nil, headers: headers, body: body))
   end
 end

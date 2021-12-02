@@ -4,15 +4,16 @@ require "./response"
 require "http/server"
 
 module Artanis
-  # TODO: etag helper to set http etag + last-modified headers and skip request if-modified-since
   class Application
     include DSL
     include Render
 
     getter :context
 
-    # TODO: parse query string and populate @params
-    # TODO: parse request body and populate @params (?)
+    def self.call(context)
+      new(context).call
+    end
+
     def initialize(@context : HTTP::Server::Context)
       @params = {} of String => String
       @parsed_body = false
@@ -50,10 +51,6 @@ module Artanis
     def not_found
       status 404
       body yield
-    end
-
-    def self.call(context)
-      new(context).call
     end
 
     private def no_such_route
